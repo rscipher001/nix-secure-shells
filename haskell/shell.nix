@@ -1,0 +1,12 @@
+{
+  pkgs ? import <nixpkgs> { },
+}:
+pkgs.mkShell {
+  nativeBuildInputs = with pkgs; [
+    ghc
+    cabal-install
+    haskell-language-server
+    ormolu
+    just
+  ];
+}

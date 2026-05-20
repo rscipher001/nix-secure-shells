@@ -1,0 +1,97 @@
+#+TITLE: Nix Devshell Flake Templates
+#+LAST_UPDATED: [2026-05-19 Tue 20:35]
+#+OPTIONS: toc:2
+
+A small collection of per-language ~devShell~ flake templates kept in
+~~/Templates~. Drop one into any project with ~nix flake init -t~ and you get a
+reproducible toolchain on ~nix develop~.
+
+* Available templates
+
+| Template | Toolchain                                                |
+|----------+----------------------------------------------------------|
+| rust     | rustc, cargo, clippy, rustfmt, rust-analyzer, pkg-config |
+| python   | python3, pip, virtualenv, uv, ruff (auto .venv)          |
+| go       | go, gopls, gotools, go-tools, delve                      |
+
+The default template (used when no ~#name~ is supplied) is ~rust~.
+
+* Usage
+
+In a fresh project directory:
+
+#+begin_src sh
+nix flake init -t ~/Templates#rust
+nix develop
+#+end_src
+
+Swap the fragment for ~#python~ or ~#go~ as needed. ~nix flake show
+~/Templates~ lists everything that's registered.
+
+* Fish abbreviations
+
+The templates are meant to be triggered through short abbreviations:
+~nix-rust~, ~nix-python~, ~nix-go~. Fish 4.x stores abbreviations in
+~config.fish~ (or a snippet under ~conf.d~) — universal-variable abbreviations
+were removed in 3.6.
+
+** One-time install
+
+Run this once; it appends the abbreviations to a dedicated fish snippet so
+they survive shell restarts:
+
+#+begin_src shell
+mkdir -p ~/.config/fish/conf.d
+cat > ~/.config/fish/conf.d/nix-templates.fish <<'EOF'
+# nix devshell template abbreviations (see ~/Templates/README.org)
+abbr -a flake-rust    'nix flake init -t ~/Templates#rust'
+abbr -a flake-python  'nix flake init -t ~/Templates#python'
+abbr -a flake-php     'nix flake init -t ~/Templates#php'
+abbr -a flake-go      'nix flake init -t ~/Templates#go'
+abbr -a flake-deno    'nix flake init -t ~/Templates#deno'
+abbr -a flake-haskell 'nix flake init -t ~/Templates#haskell'
+EOF
+#+end_src
+
+#+RESULTS:
+
+Open a new fish session (or ~source ~/.config/fish/conf.d/nix-templates.fish~)
+and the abbreviations expand inline when you hit space or enter.
+
+** Adding a new abbreviation later
+
+When you add a new template (say ~node~), append one more line to the same
+file:
+
+#+begin_src fish
+abbr -a nix-node 'nix flake init -t ~/Templates#node'
+#+end_src
+
+** Removing one
+
+#+begin_src fish
+abbr --erase nix-rust
+#+end_src
+
+Also delete the corresponding line from
+~~/.config/fish/conf.d/nix-templates.fish~ so it doesn't come back next
+session.
+
+* Adding a new template
+
+1. Create a directory at the repo root, e.g. ~node/~, containing a
+   ~flake.nix~ that exposes ~devShells.default~.
+2. Register it in the top-level ~flake.nix~ under ~outputs.templates~ with a
+   ~path~ and a one-line ~description~.
+3. Verify with ~nix flake show ~/Templates~.
+4. Add a matching ~abbr -a nix-<name>~ line to the fish snippet above.
+
+* Notes
+
+- Templates pin ~nixpkgs~ to ~nixos-unstable~; bump that input per-project if
+  you need stability.
+- ~nix flake init -t~ copies the template files into the current directory.
+  It will not overwrite existing files, so it's safe to run in a partially
+  set-up project.
+- Pair with ~direnv~ + ~use flake~ in an ~.envrc~ for automatic shell
+  activation on ~cd~.
