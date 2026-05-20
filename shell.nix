@@ -3,9 +3,7 @@
 }:
 pkgs.mkShellNoCC {
   nativeBuildInputs = with pkgs; [
-    python3
-    pyright
-    ruff
-    just
+    nixfmt
+    nixd
   ];
 }

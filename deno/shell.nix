@@ -4,6 +4,5 @@
 pkgs.mkShellNoCC {
   nativeBuildInputs = with pkgs; [
     deno
-    just
   ];
 }

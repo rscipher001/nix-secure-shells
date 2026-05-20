@@ -8,6 +8,5 @@ pkgs.mkShell {
     rust-analyzer
     rustfmt
     clippy
-    just
   ];
 }
