@@ -5,9 +5,15 @@
     { nixpkgs, ... }:
     let
       system = "x86_64-linux";
+      lib = nixpkgs.lib;
       pkgs = import nixpkgs {
         inherit system;
-        config.allowUnfree = true;
+        # Explicitly allow unfree software
+        config.allowUnfreePredicate =
+          pkg:
+          builtins.elem (lib.getName pkg) [
+            "intelephense"
+          ];
       };
     in
     {
