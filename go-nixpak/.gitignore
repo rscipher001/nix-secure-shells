@@ -1,0 +1,5 @@
+/.gopath
+/result
+.direnv
+*.test
+*.out

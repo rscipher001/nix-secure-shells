@@ -2,11 +2,14 @@
   pkgs ? import <nixpkgs> { },
 }:
 pkgs.mkShell {
-  nativeBuildInputs = with pkgs; [
+  buildInputs = with pkgs; [
     cargo
-    rustc
-    rust-analyzer
-    rustfmt
     clippy
+    glib
+    rust-analyzer
+    rustc
+    rustfmt
   ];
+  nativeBuildInputs = [ pkgs.pkg-config ];
+  env.RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
 }

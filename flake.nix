@@ -1,5 +1,5 @@
 {
-  description = "Per-project devshell flake templates";
+  description = "Per-project devshell flake templates (plain and nixpak-sandboxed variants)";
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   outputs =
@@ -12,33 +12,53 @@
     {
       devShells.${system}.default = import ./shell.nix { inherit pkgs; };
       templates = {
-        rust = {
-          path = ./rust;
-          description = "Rust shell";
+        deno = {
+          path = ./deno;
+          description = "Deno";
         };
-        python = {
-          path = ./python;
-          description = "Python shell";
-        };
-        php = {
-          path = ./php;
-          description = "PHP shell";
+        deno-nixpak = {
+          path = ./deno-nixpak;
+          description = "Sandboxed Deno using nixpak";
         };
         go = {
           path = ./go;
-          description = "Go shell";
+          description = "Go";
+        };
+        go-nixpak = {
+          path = ./go-nixpak;
+          description = "Sandboxed Go using nixpak";
         };
         node = {
           path = ./node;
-          description = "Node shell";
+          description = "Node";
         };
-        deno = {
-          path = ./deno;
-          description = "Deno shell";
+        node-nixpak = {
+          path = ./node-nixpak;
+          description = "Sandboxed Node using nixpak";
         };
-        haskell = {
-          path = ./haskell;
-          description = "Haskell shell";
+        php = {
+          path = ./php;
+          description = "PHP";
+        };
+        php-nixpak = {
+          path = ./php-nixpak;
+          description = "Sandboxed PHP using nixpak";
+        };
+        phpWithExtensions = {
+          path = ./phpWithExtensions;
+          description = "PHP with extensions";
+        };
+        phpWithExtensions-nixpak = {
+          path = ./phpWithExtensions-nixpak;
+          description = "Sandboxed PHP with extensions using nixpak";
+        };
+        rust = {
+          path = ./rust;
+          description = "Rust";
+        };
+        rust-nixpak = {
+          path = ./rust-nixpak;
+          description = "Sandboxed Rust using nixpak";
         };
       };
 

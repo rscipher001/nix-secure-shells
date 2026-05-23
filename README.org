@@ -1,20 +1,13 @@
 #+TITLE: Nix Devshell Flake Templates
-#+LAST_UPDATED: [2026-05-19 Tue 20:35]
-#+OPTIONS: toc:2
+#+LAST_UPDATED: [2026-05-23 Sat 08:30]
 
 A small collection of per-language ~devShell~ flake templates kept in
 ~~/Templates~. Drop one into any project with ~nix flake init -t~ and you get a
 reproducible toolchain on ~nix develop~.
 
-* Available templates
-
-| Template | Toolchain                                                |
-|----------+----------------------------------------------------------|
-| rust     | rustc, cargo, clippy, rustfmt, rust-analyzer, pkg-config |
-| python   | python3, pip, virtualenv, uv, ruff (auto .venv)          |
-| go       | go, gopls, gotools, go-tools, delve                      |
-
-The default template (used when no ~#name~ is supplied) is ~rust~.
+Most languages ship in two flavours: a plain variant and a ~-nixpak~ variant
+that wraps each tool in a [[https://github.com/nixpak/nixpak][nixpak]] bubblewrap
+sandbox (network on, only ~$PWD~ bound read-write).
 
 * Usage
 
@@ -44,19 +37,22 @@ they survive shell restarts:
 mkdir -p ~/.config/fish/conf.d
 cat > ~/.config/fish/conf.d/nix-templates.fish <<'EOF'
 # nix devshell template abbreviations (see ~/Templates/README.org)
-abbr -a flake-rust    'nix flake init -t ~/Templates#rust'
-abbr -a flake-python  'nix flake init -t ~/Templates#python'
-abbr -a flake-php     'nix flake init -t ~/Templates#php'
-abbr -a flake-go      'nix flake init -t ~/Templates#go'
-abbr -a flake-deno    'nix flake init -t ~/Templates#deno'
-abbr -a flake-haskell 'nix flake init -t ~/Templates#haskell'
+abbr -a flake-deno                       'nix flake init -t ~/Templates#deno'
+abbr -a flake-deno-nixpak                'nix flake init -t ~/Templates#deno-nixpak'
+abbr -a flake-go                         'nix flake init -t ~/Templates#go'
+abbr -a flake-go-nixpak                  'nix flake init -t ~/Templates#go-nixpak'
+abbr -a flake-node                       'nix flake init -t ~/Templates#node'
+abbr -a flake-node-nixpak                'nix flake init -t ~/Templates#node-nixpak'
+abbr -a flake-php                        'nix flake init -t ~/Templates#php'
+abbr -a flake-php-nixpak                 'nix flake init -t ~/Templates#php-nixpak'
+abbr -a flake-phpWithExtensions          'nix flake init -t ~/Templates#phpWithExtensions'
+abbr -a flake-phpWithExtensions-nixpak   'nix flake init -t ~/Templates#phpWithExtensions-nixpak'
+abbr -a flake-rust                       'nix flake init -t ~/Templates#rust'
+abbr -a flake-rust-nixpak                'nix flake init -t ~/Templates#rust-nixpak'
 EOF
 #+end_src
 
 #+RESULTS:
-
-Open a new fish session (or ~source ~/.config/fish/conf.d/nix-templates.fish~)
-and the abbreviations expand inline when you hit space or enter.
 
 ** Adding a new abbreviation later
 
@@ -64,18 +60,9 @@ When you add a new template (say ~node~), append one more line to the same
 file:
 
 #+begin_src fish
-abbr -a nix-node 'nix flake init -t ~/Templates#node'
+abbr -a nix-node 'nix flake init -t ~/Templates#haskell'
 #+end_src
 
-** Removing one
-
-#+begin_src fish
-abbr --erase nix-rust
-#+end_src
-
-Also delete the corresponding line from
-~~/.config/fish/conf.d/nix-templates.fish~ so it doesn't come back next
-session.
 
 * Adding a new template
 
@@ -84,7 +71,10 @@ session.
 2. Register it in the top-level ~flake.nix~ under ~outputs.templates~ with a
    ~path~ and a one-line ~description~.
 3. Verify with ~nix flake show ~/Templates~.
-4. Add a matching ~abbr -a nix-<name>~ line to the fish snippet above.
+4. Add a matching ~abbr -a flake-<name>~ line to the fish snippet above.
+5. For a sandboxed variant, copy an existing ~*-nixpak/~ as a starting point —
+   the pattern is to add the ~nixpak~ input, derive ~mkNixPak~, and wrap each
+   tool in the ~sandbox~ helper inside ~shell.nix~.
 
 * Notes
 
